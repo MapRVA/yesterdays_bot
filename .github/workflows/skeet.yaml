@@ -36,8 +36,7 @@ jobs:
           
     - name: Make post
       id: post
-      run: |
-        (Rscript the_bot.R 2>&1)
+      run: Rscript the_bot.R
     
     # - name: Log item
     #   if: success() || failure()
