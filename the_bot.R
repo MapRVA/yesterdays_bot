@@ -17,7 +17,9 @@ extract_tag <- function(html, xpath, href = FALSE) {
   }
 }
 
+
 # Ping Yesterdays API
+cat("Pinging Yesterdays API...\n")
 georefs <- "https://yesterdays.maprva.org/api/v1/geojson/" |>
   request() |>
   req_user_agent("Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)") |>
@@ -28,6 +30,7 @@ georefs <- "https://yesterdays.maprva.org/api/v1/geojson/" |>
 selected <- georefs[[2]][[sample(1:length(georefs[[2]]), 1)]]$properties
 
 # Scrape metadata unavailable via API
+cat("Scraping image metadata...\n")
 selected_info <- selected$img_entry |>
   request() |>
   req_user_agent("Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)") |>
@@ -56,9 +59,10 @@ metadata <- data.frame(
 )
 
 # Snapshot the georeference using Chromium
+cat("Snapshotting the current georeference...\n")
 webshot(
   url = selected$img_entry,
-  file = 'georef.jpg',
+  file = 'georef.png',
   selector = ".map-container",
   delay = 10,
   useragent = "Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)",
@@ -67,12 +71,13 @@ webshot(
 list.files() # temporary for debugging
 
 # Post to Bluesky
+cat("Bluesky authentication...\n")
 auth(
   user = 'yesterdaysbot.bsky.social',
   password = Sys.getenv("BSKY_PAT")
 )
 
-
+cat("Posting to Bluesky...\n")
 post_skeet(
   text = paste0(
     metadata$title,
