@@ -44,10 +44,10 @@ jobs:
     #   run: |
     #     echo $(date -u +%FT%T.%3NZ),$(grep "Item URL" log | sed 's/Item URL: //g'),${{steps.post.conclusion}} >> post.log
         
-    - name: Commit log
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add post.log
-        git commit -m "[auto] Update bot post log $(TZ=America/New_York date +'%Y-%m-%d %H:%M')"
-        git push
+    # - name: Commit log
+    #   run: |
+    #     git config user.name github-actions
+    #     git config user.email github-actions@github.com
+    #     git add post.log
+    #     git commit -m "[auto] Update bot post log $(TZ=America/New_York date +'%Y-%m-%d %H:%M')"
+    #     git push
