@@ -64,6 +64,7 @@ webshot(
   useragent = "Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)",
   quiet = FALSE
 )
+list.files() # temporary for debugging
 
 # Post to Bluesky
 auth(
@@ -86,13 +87,13 @@ post_skeet(
     "\n",
     metadata$source_url
   ),
-  image = c(selected$img_url, "georef.png"),
+  image = c(selected$img_url),#, "georef.png"),
   image_alt = c(
-    metadata$desc,
-    paste0(
-      "Georeference as of ",
-      Sys.Date(),
-      ". Picture shows a red dot in the center of a map with a gray cone representing the direction of the picture."
-    )
+    metadata$desc#,
+    # paste0(
+    #   "Georeference as of ",
+    #   Sys.Date(),
+    #   ". Picture shows a red dot in the center of a map with a gray cone representing the direction of the picture."
+    # )
   )
 )
