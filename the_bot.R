@@ -28,6 +28,7 @@ georefs <- "https://yesterdays.maprva.org/api/v1/geojson/" |>
 
 # Randomly select a georeference
 selected <- georefs[[2]][[sample(1:length(georefs[[2]]), 1)]]$properties
+cat("Item selected:", selected$img_entry, "\n")
 
 # Scrape metadata unavailable via API
 cat("Scraping image metadata...\n")
