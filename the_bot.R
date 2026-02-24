@@ -167,7 +167,7 @@ if (isTRUE(georeferenced)) {
     cat("Posting to Bluesky...\n")
     post_skeet(
       text = paste0(
-        "Not yet geotagged! Give it a shot:\n",
+        "Think you know where this picture was taken? Give it a shot:\n",
         georef_url,
         "\n",
         selected_full$title,
