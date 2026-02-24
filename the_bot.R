@@ -16,6 +16,7 @@ cat(
   sep = ""
 )
 
+
 image_endpoint <- "https://yesterdays.maprva.org/api/v2/images/" |>
   request()
 
