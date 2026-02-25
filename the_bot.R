@@ -1,6 +1,8 @@
 library(httr2)
 library(rvest)
 library(atrrr)
+library(rtoot)
+library(magick)
 library(webshot2)
 
 # Pick "from above" about 10% of the time
@@ -73,6 +75,17 @@ auth(
   user = 'yesterdaysbot.bsky.social',
   password = Sys.getenv("BSKY_PAT")
 )
+cat("Mastodon authentication...\n")
+rtoot::verify_envvar()
+
+cat("   downloading image for Mastodon...\n")
+image_read(selected_full$permalink) |>
+  image_write("toot_image.jpg", format = "jpeg")
+masto_quiet <- ifelse(
+  format(Sys.time(), "%H", tz = "UTC") == 16,
+  "public",
+  "unlisted"
+)
 
 
 if (isTRUE(georeferenced)) {
@@ -88,118 +101,103 @@ if (isTRUE(georeferenced)) {
   )
   cat(list.files())
 
-  cat("Posting to Bluesky...\n")
-  post_skeet(
-    text = paste0(
-      selected_full$title,
-      ", ",
-      selected_full$original_date,
-      "\n",
-      selected_full$collection$source_name,
-      ", ",
-      selected_full$collection$name,
-      "\n",
-      selected_full$url,
-      "\n",
-      selected_full$original_url
-    ),
-    image = c(selected_full$permalink, "georef.png"),
-    image_alt = c(
-      selected_full$description,
-      paste0(
-        "Georeference as of ",
-        Sys.Date(),
-        ". Picture shows a red dot in the center of a map with a gray cone representing the direction of the picture."
-      )
+  georef_post_body <- paste0(
+    selected_full$title,
+    ", ",
+    selected_full$original_date,
+    "\n",
+    selected_full$collection$source_name,
+    ", ",
+    selected_full$collection$name,
+    "\n",
+    selected_full$url,
+    "\n",
+    selected_full$original_url
+  )
+  georef_alt_text <- c(
+    selected_full$description,
+    paste0(
+      "Georeference as of ",
+      Sys.Date(),
+      ". Picture shows a red dot in the center of a map with a gray cone representing the direction of the picture."
     )
   )
+
+  cat("Posting to Bluesky...\n")
+  post_skeet(
+    text = georef_post_body,
+    image = c(selected_full$permalink, "georef.png"),
+    image_alt = georef_alt_text
+  )
+
+  cat(
+    "Posting to Mastodon",
+    ifelse(masto_quiet == "public", "publicly...\n", "quietly...\n")
+  )
+
+  post_toot(
+    status = georef_post_body,
+    media = c("toot_image.jpg", "georef.png"),
+    alt_text = georef_alt_text,
+    visibility = masto_quiet
+  )
 } else {
-  # "georeferenced" currently only refers to point references
-  #   catch if from_above=T, georef=F and a polygonal reference still exists
-  poly_ref_exists <- length(selected_full$from_above_georeferences) != 0
+  georef_url <- ifelse(
+    isTRUE(from_above),
+    paste0(
+      "https://yesterdays.maprva.org/polygonal-georeference/",
+      selected_full$id
+    ),
+    paste0("https://yesterdays.maprva.org/georeference/?image=", selected$id)
+  )
 
-  if (from_above && poly_ref_exists) {
-    cat("Snapshotting the current georeference...\n")
-    webshot(
-      url = selected_full$url,
-      file = 'georef.png',
-      selector = ".map-container",
-      delay = 2,
-      useragent = "Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)",
-      quiet = FALSE
-    )
+  phrases_q <- c(
+    "Think you know where this picture was taken?",
+    "Not yet geotagged!",
+    "Doesn't seem like this one is in the system.",
+    "Recognize this spot?",
+    "Help! Where was I taken??"
+  )
+  phrases_challenge <- c(
+    "Give it a shot!",
+    "Tag it for us!",
+    "Pin it!",
+    "Put a pin in its spot!",
+    "Click here to pin:",
+    "Click here to geotag:"
+  )
+  georef_post_body <- paste0(
+    paste(sample(phrases_q, 1), sample(phrases_challenge, 1)),
+    "\n",
+    georef_url,
+    "\n",
+    selected_full$title,
+    ", ",
+    selected_full$original_date,
+    "\n",
+    selected_full$collection$source_name,
+    ", ",
+    selected_full$collection$name,
+    "\n",
+    selected_full$original_url
+  )
 
-    cat("Posting to Bluesky...\n")
+  cat("Posting to Bluesky...\n")
+  post_skeet(
+    text = georef_post_body,
+    image = selected_full$permalink,
+    image_alt = selected_full$description
+  )
 
-    post_skeet(
-      text = paste0(
-        selected_full$title,
-        ", ",
-        selected_full$original_date,
-        "\n",
-        selected_full$collection$source_name,
-        ", ",
-        selected_full$collection$name,
-        "\n",
-        selected_full$url,
-        "\n",
-        selected_full$original_url
-      ),
-      image = c(selected_full$permalink, "georef.png"),
-      image_alt = c(
-        selected_full$description,
-        paste0(
-          "Georeference as of ",
-          Sys.Date(),
-          ". Picture shows a red dot in the center of a map with a gray cone representing the direction of the picture."
-        )
-      )
-    )
-  } else {
-    georef_url <- ifelse(
-      isTRUE(from_above),
-      paste0(
-        "https://yesterdays.maprva.org/polygonal-georeference/",
-        selected_full$id
-      ),
-      paste0("https://yesterdays.maprva.org/georeference/?image=", selected$id)
-    )
+  cat(
+    "Posting to Mastodon",
+    ifelse(masto_quiet == "public", "publicly...\n", "quietly...\n")
+  )
 
-    phrases_q <- c(
-      "Think you know where this picture was taken?",
-      "Not yet geotagged!",
-      "Doesn't seem like this one is in the system.",
-      "Recognize this spot?",
-      "Help! Where was I taken??"
-    )
-    phrases_challenge <- c(
-      "Give it a shot!",
-      "Tag it for us!",
-      "Pin it!",
-      "Put a pin in its spot!",
-      "Click here to pin:",
-      "Click here to geotag:"
-    )
-
-    cat("Posting to Bluesky...\n")
-    post_skeet(
-      text = paste0(
-        paste(sample(phrases_q, 1), sample(phrases_challenge, 1)),
-        "\n",
-        georef_url,
-        "\n",
-        selected_full$title,
-        ", ",
-        selected_full$original_date,
-        "\n",
-        selected_full$collection$source_name,
-        ", ",
-        selected_full$collection$name,
-        "\n",
-        selected_full$original_url
-      ),
-      image = selected_full$permalink,
-      image_alt = selected_full$description
-    )
-  }
+  post_toot(
+    status = georef_post_body,
+    media = "toot_image.jpg",
+    alt_text = selected_full$description,
+    visibility = masto_quiet
+  )
 }
