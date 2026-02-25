@@ -37,7 +37,7 @@ cat(n_images, "images found.\n")
 
 img <- sample(1:n_images, 1)
 
-cat("Pinging Yesterdays API for information on image #", img, "...\n", sep = "")
+cat("Pinging Yesterdays API for information...\n", sep = "")
 selected <- image_endpoint |>
   req_url_query(
     georeferenced = georeferenced,
@@ -52,7 +52,7 @@ selected <- image_endpoint |>
 
 ### neeed to hit image API with ID directly
 selected_full <- image_endpoint |>
-  req_url_path_append(img) |>
+  req_url_path_append(selected$id) |>
   req_user_agent("Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)") |>
   req_perform() |>
   resp_body_json()
@@ -160,7 +160,7 @@ if (isTRUE(georeferenced)) {
       isTRUE(from_above),
       paste0(
         "https://yesterdays.maprva.org/polygonal-georeference/",
-        selected$id
+        selected_full$id
       ),
       paste0("https://yesterdays.maprva.org/georeference/?image=", selected$id)
     )
