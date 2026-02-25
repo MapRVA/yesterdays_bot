@@ -165,10 +165,27 @@ if (isTRUE(georeferenced)) {
       paste0("https://yesterdays.maprva.org/georeference/?image=", selected$id)
     )
 
+    phrases_q <- c(
+      "Think you know where this picture was taken?",
+      "Not yet geotagged!",
+      "Doesn't seem like this one is in the system.",
+      "Recognize this spot?",
+      "Help! Where was I taken??"
+    )
+    phrases_challenge <- c(
+      "Give it a shot!",
+      "Tag it for us!",
+      "Pin it!",
+      "Put a pin in its spot!",
+      "Click here to pin:",
+      "Click here to geotag:"
+    )
+
     cat("Posting to Bluesky...\n")
     post_skeet(
       text = paste0(
-        "Think you know where this picture was taken? Give it a shot:\n",
+        paste(sample(phrases_q, 1), sample(phrases_challenge, 1)),
+        "\n",
         georef_url,
         "\n",
         selected_full$title,
