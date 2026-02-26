@@ -1,0 +1,35 @@
+on:
+  schedule:
+      - cron: "13 */2 * * *"
+  workflow_dispatch:
+
+name: make-post
+
+permissions:
+    contents: write
+
+jobs:
+  make-post:
+    runs-on: ubuntu-latest
+    container:
+      image: rocker/r2u:latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      BSKY_PAT: ${{ secrets.BSKY_PAT }}
+      RTOOT_DEFAULT_TOKEN: ${{ secrets.MASTO_PAT }}
+    
+    steps:
+
+      - name: Install R packages
+        run: apt update && \
+          Rscript -e "install.packages(c('httr2', 'rvest', 'magick', \
+            'atrrr', 'webshot2', 'rtoot'))"
+
+      - name: Install Chromium
+        run: apt install wget && \
+          wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+          apt install -y ./google-chrome-stable_current_amd64.deb
+
+      - name: Make post
+        id: post
+        run: Rscript the_bot.R
