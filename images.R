@@ -115,7 +115,11 @@ if (isTRUE(georeferenced)) {
     selected_full$original_url
   )
   georef_alt_text <- c(
-    selected_full$description,
+    ifelse(
+      nchar(selected_full$description) == 0,
+      "No useful alt text here; the picture is undescribed.",
+      selected_full$description
+    ),
     paste0(
       "Georeference as of ",
       Sys.Date(),
