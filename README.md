@@ -1,2 +1,2 @@
 # yesterdays_bot
-Bluesky bot for posting Yesterdays content
+Bot for posting [Yesterdays](https://yesterdays.maprva.org) content to Bluesky ([@yesterdaysbot.bsky.social](https://bsky.app/profile/yesterdaysbot.bsky.social)) and Mastodon ([@yesterdays_bot@en.osm.town](https://en.osm.town/@yesterdays_bot)).
