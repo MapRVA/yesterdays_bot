@@ -19,11 +19,13 @@ jobs:
       RTOOT_DEFAULT_TOKEN: ${{ secrets.MASTO_PAT }}
     
     steps:
+    
+      - name: Check out repository
+        uses: actions/checkout@v4
 
       - name: Install R packages
-        run: apt update && apt upgrade -y && \
-          Rscript -e "install.packages(c('httr2', 'rvest', 'magick', \
-            'atrrr', 'webshot2', 'rtoot'))"
+        shell: Rscript {0}
+        run: install.packages(c('httr2', 'rvest', 'magick', 'atrrr', 'webshot2', 'rtoot'))
 
       - name: Install Chromium
         run: apt install wget && \
