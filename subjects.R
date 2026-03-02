@@ -108,14 +108,10 @@ post_skeet(
   image_alt = alt_text
 )
 
-cat(
-  "Posting to Mastodon",
-  ifelse(masto_quiet == "public", "publicly...\n", "quietly...\n")
-)
+cat("Posting to Mastodon")
 
 post_toot(
   status = post_body,
   media = images_to_post,
-  alt_text = alt_text,
-  visibility = masto_quiet
+  alt_text = alt_text
 )
