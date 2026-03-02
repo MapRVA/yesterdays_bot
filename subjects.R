@@ -56,8 +56,8 @@ image_read(sub("_thumb$", '', imgs$thumbnail)) |>
 
 prompt <- c(
   "Did you know that there are ",
-  "That's a lot of random images. How about poking through the",
-  "How about checking out the"
+  "That's a lot of random images. How about poking through the ",
+  "How about checking out the "
 )
 
 
