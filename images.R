@@ -116,8 +116,8 @@ if (isTRUE(georeferenced)) {
   )
   georef_alt_text <- c(
     ifelse(
-      nchar(selected_full$description) == 0,
-      "No useful alt text here; the picture is undescribed.",
+      is.null(selected_full$description),
+      paste("No decription provided of", selected_full$title), # Fall back to title if no description
       selected_full$description
     ),
     paste0(
