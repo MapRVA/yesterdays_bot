@@ -37,7 +37,7 @@ shot_outcome <- tryCatch(
     url = paste0("https://yesterdays.maprva.org/subjects/", subject$slug),
     file = 'subject.png',
     selector = "#subject-map",
-    delay = 5,
+    delay = 10,
     useragent = "Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)",
     quiet = FALSE
   ),

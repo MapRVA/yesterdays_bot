@@ -95,7 +95,7 @@ if (isTRUE(georeferenced)) {
     url = selected_full$url,
     file = 'georef.png',
     selector = ".map-container",
-    delay = 2,
+    delay = 10,
     useragent = "Yesterdays Bot (https://github.com/MapRVA/yesterdays_bot)",
     quiet = FALSE
   )
